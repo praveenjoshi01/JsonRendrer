@@ -1,0 +1,145 @@
+{
+    "___meta___": {
+        "schema_version": "0.0.0-alpha-unstable",
+        "generated_at": "2026-03-30T00:00:00.000Z",
+        "description": "This JSON is intentionally messy for renderer stress-testing. $ENV_VAR ${TEMPLATE_EXPR} $$escaped $$ end.",
+        "tags": [
+            "test",
+            "messy",
+            "unicode",
+            "markdown",
+            "💥",
+            "$$money$$",
+            null,
+            true,
+            false,
+            42
+        ],
+        "empty_object": {},
+        "empty_array": [],
+        "null_value": null,
+        "boolean_true": true,
+        "boolean_false": false,
+        "integer": 9007199254740991,
+        "negative_integer": -9007199254740991,
+        "float": 3.141592653589793,
+        "negative_float": -2.718281828459045,
+        "zero": 0,
+        "string_that_looks_like_number": "00042",
+        "string_that_looks_like_bool": "true",
+        "string_that_looks_like_null": "null"
+    },
+    "markdown_content_with_dollar_signs": {
+        "simple_dollars": "The price is $10.00 and the tax is $1.50, total = $11.50",
+        "css_breaking_dollars": "Use `$primary-color`, `$font-size`, `${theme.spacing.md}` in your SCSS. Watch out for `$$escaped` and `$$$triple$$$`.",
+        "latex_style_dollars": "Inline math: $E = mc^2$ and display math: $$\\int_0^\\infty e^{-x^2} dx = \\frac{\\sqrt{\\pi}}{2}$$",
+        "dollar_in_code_block": "```bash\nexport API_KEY=$MY_SECRET_KEY\necho \"Cost: $${PRICE}\"\ncurl -H \"Authorization: Bearer $TOKEN\" https://api.example.com\nPS1='$USER@$HOSTNAME:$PWD$ '\n```",
+        "dollar_in_table_markdown": "| Variable | Value | Cost |\n|---|---|---|\n| `$primary` | `#ff0000` | $0.00 |\n| `$secondary` | `#00ff00` | $99.99 |\n| `${base}` | `16px` | $${DYNAMIC} |\n| `$$escaped` | `literal` | $1,000,000.00 |",
+        "dollar_in_headers": "# $PROJECT_NAME Overview\n## Version $VERSION\n### Pricing: $$$\n#### Environment: $NODE_ENV\n##### Config: ${CONFIG_PATH}\n###### Debug: $DEBUG=true"
+    },
+    "deep_nesting": {
+        "level1": {
+            "level2": {
+                "level3": {
+                    "level4": {
+                        "level5": {
+                            "level6": {
+                                "level7": {
+                                    "level8": {
+                                        "level9": {
+                                            "level10": {
+                                                "value": "You have reached the bottom of the rabbit hole. $DEPTH=10. 🐇",
+                                                "array_here": [
+                                                    1,
+                                                    2,
+                                                    3,
+                                                    [
+                                                        4,
+                                                        5,
+                                                        [
+                                                            6,
+                                                            7,
+                                                            [
+                                                                8,
+                                                                9,
+                                                                [
+                                                                    10
+                                                                ]
+                                                            ]
+                                                        ]
+                                                    ]
+                                                ],
+                                                "mixed": {
+                                                    "a": null,
+                                                    "b": true,
+                                                    "c": 3.14,
+                                                    "d": "$$",
+                                                    "e": []
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "unicode_stress_test": {
+        "emoji_keys_and_values": {
+            "👋_greeting": "Hello 🌍🌎🌏",
+            "🔥_fire": "This is 🔥🔥🔥 fire! Cost: $9.99",
+            "💰_money": "$$$$$$$$$$ ¢ £ € ¥ ₹ ₿ ₩ ₪ ₫ ₭ ₮ ₯ ₰ ₱ ₲ ₳ ₴ ₵ ₶ ₷ ₸ ₹",
+            "🎉_party": "🎊🎈🎁🎀🎆🎇✨🌟⭐💫🌈🦄🎠🎡🎢",
+            "🧪_test": "Test value with $VARIABLE and ${TEMPLATE} and $$escaped $$"
+        },
+        "cjk_characters": {
+            "chinese_simplified": "这是一段很长的中文文本，用于测试渲染器是否能正确处理汉字。价格：$100.00。模板：${价格}。",
+            "chinese_traditional": "這是繁體中文。費用：$500。變量：$變量名稱。",
+            "japanese_hiragana": "これはひらがなのテキストです。価格：$100。変数：$変数名。",
+            "japanese_katakana": "コレハカタカナノテキストデス。コスト：$200。テンプレート：${テンプレート}。",
+            "japanese_kanji": "漢字のテキスト。総額：$99.99。設定：$設定。",
+            "korean": "이것은 한국어 텍스트입니다. 가격: $300. 변수: $변수이름.",
+            "arabic": "هذا نص عربي. السعر: $400. المتغير: $اسم_المتغير.",
+            "hebrew": "זהו טקסט בעברית. מחיר: $500. משתנה: $שם_משתנה.",
+            "thai": "นี่คือข้อความภาษาไทย ราคา: $600 ตัวแปร: $ชื่อตัวแปร",
+            "devanagari": "यह हिंदी पाठ है। मूल्य: $700। चर: $चर_नाम।",
+            "greek": "Αυτό είναι ελληνικό κείμενο. Τιμή: $800. Μεταβλητή: $όνομα_μεταβλητής.",
+            "cyrillic": "Это русский текст. Цена: $900. Переменная: $имя_переменной.",
+            "mixed_rtl_ltr": "English mixed with العربية and עברית and back to English. $MIXED_VAR = ${value}."
+        },
+        "special_unicode_chars": {
+            "zero_width_space": "before\u200bafter",
+            "non_breaking_space": "before\u00a0after",
+            "em_dash": "before\u2014after",
+            "en_dash": "before\u2013after",
+            "ellipsis": "before\u2026after",
+            "left_double_quotation": "\u201cquoted\u201d",
+            "right_single_quotation": "it\u2019s",
+            "bullet": "\u2022 item one \u2022 item two \u2022 item three",
+            "degree": "100\u00b0C = 212\u00b0F",
+            "copyright": "\u00a9 2026 Test Corp. All rights reserved. Price: $0.00",
+            "trademark": "TestBrand\u2122 costs $99.99",
+            "registered": "Product\u00ae version $VERSION",
+            "pilcrow": "Paragraph\u00b6marker",
+            "section": "\u00a7 Section 3.1.4 \u2013 Dollar signs: $10, $20, $30",
+            "infinity": "\u221e items at $0.01 each = $\u221e",
+            "arrow_chars": "\u2190 \u2191 \u2192 \u2193 \u2194 \u2195 \u21a9 \u21aa \u21d2 \u21d4",
+            "box_drawing": "\u250c\u2500\u2500\u2500\u2510\n\u2502 $ \u2502\n\u2514\u2500\u2500\u2500\u2518",
+            "math_symbols": "\u221a\u221b\u222b\u222c\u222d\u2211\u220f\u2202\u2207\u2260\u2264\u2265\u2248",
+            "combining_chars": "cafe\u0301 (caf\u00e9) na\u00efve re\u0301sume\u0301"
+        },
+        "surrogate_pairs_and_high_codepoints": {
+            "musical_notes": "\ud834\udd1e \ud834\udd22 𝄞 𝄢 𝅗𝅥 𝆺𝅥𝅯",
+            "linear_b": "𐀀 𐀁 𐀂 𐀃 𐀄 Linear B Syllabary",
+            "cuneiform": "𒀀 𒀁 𒀂 Cuneiform",
+            "egyptian_hieroglyphs": "𓀀 𓀁 𓀂 𓀃 Egyptian Hieroglyphs",
+            "emoji_flags": "🇺🇸 🇬🇧 🇯🇵 🇩🇪 🇫🇷 🇨🇳 🇧🇷 🇮🇳 🇦🇺 🇨🇦",
+            "emoji_complex_sequences": "👨‍👩‍👧‍👦 👩‍💻 🏳️‍🌈 🧑‍🚀 👁️‍🗨️"
+        }
+    },
+    "markdown_rich_content": {
+        "full_document_1": "# The $100 Developer Guide\n\n## Introduction\n\nWelcome to this guide. All prices are in **USD ($)**. Variables like `$HOME`, `$PATH`, and `${USER}` are common in shell scripts.\n\n---\n\n## Pricing Table\n\n| Tier | Price/mo | Variables | Unicode |\n|------|----------|-----------|--------|\n| Free | $0 | `$FREE_TIER` | 🆓 |\n| Basic | $9.99 | `$BASIC` | ⭐ |\n| Pro | $29.99 | `${PRO_KEY}` | 🚀 |\n| Enterprise | $$$$ | `$$ENTERPRISE` | 🏢 |\n\n---\n\n## Code Examples\n\n```python\nimport os\n\nprice = float(os.environ.get('$PRICE', '9.99'))\ntemplate = f\"Cost: ${price:.2f}\"  # $-sign in f-string\nescaped = \"Literal $$dollar$$\"\nprint(f\"User: {os.environ['$USER']}\")\n```\n\n```javascript\nconst price = process.env.$PRICE ?? '$9.99';\nconst msg = `Total: $${price}`; // template literal with $$\nconst scss = `color: ${$primaryColor};`;\n```\n\n```css\n.price::before {\n  content: '$';\n}\n.price-value {\n  color: var(--$color, #000); /* $variable in comment */\n}\n```\n\n```bash\n#!/bin/bash\nPRICE=$1\necho \"Cost: $$\"\necho \"PID: $$\"\nexport PATH=$PATH:/usr/local/bin\ncurl -d \"price=${PRICE}&token=$API_TOKEN\" $BASE_URL\n```\n\n---\n\n## Unicode Examples\n\n> 💡 **Note:** This section contains 中文, 日本語, 한국어, العربية, and Ελληνικά\n\n- 价格: **$100**\n- 가격: **$200**  \n- السعر: **$300**\n- Τιμή: **$400**\n- Цена: **$500**\n\n---\n\n## Math (LaTeX-style)\n\nInline: $f(x) = x^2 + 2x + 1$\n\nDisplay:\n$$\n\\sum_{i=1}^{n} i = \\frac{n(n+1)}{2}\n$$\n\n$$\n\\int_{-\\infty}^{+\\infty} e^{-x^2} dx = \\sqrt{\\pi}\n$$\n\n---\n\n*Footer: © 2026 TestCorp™. $ALL_RIGHTS_RESERVED.*\n",
+        "full_document_2": "# 🔥 Edge Cases: `$`, `$$`, `${}`, `${$}`, `$$$`\n\n## Dollar Sign Variants\n\n| Expression | Context | Notes |\n|---|---|---|\n| `$VAR` | Shell/SCSS | Simple variable |\n| `${VAR}` | Shell/JS template | Braced variable |\n| `$$` | Shell | Current PID |\n| `$$$` | Markdown/Currency | Triple dollar |\n| `$$math$$` | LaTeX | Display math |\n| `$0` | Shell | Script name |\n| `$1..$9` | Shell | Positional args |\n| `$?` | Shell | Exit status |\n| `$#` | Shell | Arg count |\n|

@@ -12,9 +12,11 @@ import json
 from typing import Any
 
 import markdown as md_lib
+from json_repair import repair_json as repair
 
 from json_renderer.utils import (
     escape_html_text,
+    highlight_vars_html,
     is_markdown_content,
     sanitise_html,
 )
@@ -35,6 +37,7 @@ _CSS = """
     --number-color: #fbbf24;
     --bool-color: #f472b6;
     --null-color: #64748b;
+    --var-color: #38bdf8;
     --border: #334155;
     --shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
     --radius: 8px;
@@ -147,8 +150,45 @@ ul.json-array > li:last-child {
 .json-number { color: var(--number-color); font-family: 'JetBrains Mono', monospace; }
 .json-bool   { color: var(--bool-color); font-style: italic; }
 .json-null   { color: var(--null-color); font-style: italic; }
+.json-var    { color: var(--var-color); font-family: 'JetBrains Mono', monospace; font-weight: 600; }
 
 .json-string::before, .json-string::after { content: '"'; opacity: 0.4; }
+
+/* ── Collapsible sections ───────────────────────────────── */
+
+details.json-collapsible {
+    margin: 0.2rem 0;
+}
+
+details.json-collapsible > summary {
+    cursor: pointer;
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    background: var(--bg-tertiary);
+    display: inline-block;
+    transition: background 0.2s;
+    user-select: none;
+    outline: none;
+}
+
+details.json-collapsible > summary:hover {
+    background: var(--accent-dim);
+    color: var(--text-primary);
+}
+
+details.json-collapsible > .collapsible-content {
+    margin-top: 0.5rem;
+    border-left: 1px dashed var(--border);
+    padding-left: 1rem;
+}
+
+/* ── Scrolling wide content ─────────────────────────────── */
+
+.json-container {
+    overflow-x: auto;
+}
 
 /* ── Embedded markdown ──────────────────────────────────── */
 
@@ -231,7 +271,7 @@ ul.json-array > li:last-child {
 # ─── Rendering logic ─────────────────────────────────────────────────────────
 
 
-def _render_value(value: Any) -> str:
+def _render_value(value: Any, depth: int = 0) -> str:
     """Render a single JSON value to an HTML fragment."""
     if value is None:
         return '<span class="json-null">null</span>'
@@ -249,28 +289,36 @@ def _render_value(value: Any) -> str:
                 extensions=["fenced_code", "tables", "nl2br"],
             )
             safe_html = sanitise_html(raw_html)
-            return f'<div class="md-rendered">{safe_html}</div>'
-        return f'<span class="json-string">{escape_html_text(value)}</span>'
+            # Add RTL support to markdown blocks
+            return f'<div class="md-rendered" dir="auto">{safe_html}</div>'
+        
+        # Highlight variables and handle BiDi
+        escaped = escape_html_text(value)
+        highlighted = highlight_vars_html(escaped)
+        return f'<span class="json-string" dir="auto">{highlighted}</span>'
 
     if isinstance(value, dict):
-        return _render_object(value)
+        return _render_object(value, depth + 1)
 
     if isinstance(value, list):
-        return _render_array(value)
+        return _render_array(value, depth + 1)
 
     # Fallback — stringify anything unexpected
-    return f'<span class="json-string">{escape_html_text(str(value))}</span>'
+    return f'<span class="json-string" dir="auto">{escape_html_text(str(value))}</span>'
 
 
-def _render_object(obj: dict[str, Any]) -> str:
+def _render_object(obj: dict[str, Any], depth: int = 0) -> str:
     """Render a JSON object as an HTML table."""
     if not obj:
         return '<span class="json-empty">{ }</span>'
 
+    # Handle deep nesting by collapsing
+    should_collapse = depth >= 4 # root=0, first level=1... 4 is deep enough
+    
     rows: list[str] = []
     for key, value in obj.items():
         escaped_key = escape_html_text(str(key))
-        rendered_value = _render_value(value)
+        rendered_value = _render_value(value, depth)
 
         # Add type badge for nested structures
         badge = ""
@@ -282,11 +330,11 @@ def _render_object(obj: dict[str, Any]) -> str:
         rows.append(
             f"<tr>"
             f'<td class="json-key">{escaped_key}</td>'
-            f'<td class="json-value">{badge}{rendered_value}</td>'
+            f'<td class="json-value" dir="auto">{badge}{rendered_value}</td>'
             f"</tr>"
         )
 
-    return (
+    content = (
         '<div class="json-container">'
         '<table class="json-object">'
         f"{''.join(rows)}"
@@ -294,18 +342,43 @@ def _render_object(obj: dict[str, Any]) -> str:
         "</div>"
     )
 
+    if should_collapse:
+        summary = f"Object {{ {len(obj)} keys }}"
+        return (
+            '<details class="json-collapsible">'
+            f'<summary>{summary}</summary>'
+            f'<div class="collapsible-content">{content}</div>'
+            '</details>'
+        )
+    
+    return content
 
-def _render_array(arr: list[Any]) -> str:
+
+def _render_array(arr: list[Any], depth: int = 0) -> str:
     """Render a JSON array as an HTML unordered list."""
     if not arr:
         return '<span class="json-empty">[ ]</span>'
 
+    # Handle deep nesting by collapsing
+    should_collapse = depth >= 4
+
     items: list[str] = []
     for idx, item in enumerate(arr):
-        rendered = _render_value(item)
-        items.append(f'<li data-index="{idx}">{rendered}</li>')
+        rendered = _render_value(item, depth)
+        items.append(f'<li data-index="{idx}" dir="auto">{rendered}</li>')
 
-    return f'<ul class="json-array">{"".join(items)}</ul>'
+    content = f'<ul class="json-array">{"".join(items)}</ul>'
+
+    if should_collapse:
+        summary = f"Array [ {len(arr)} items ]"
+        return (
+            '<details class="json-collapsible">'
+            f'<summary>{summary}</summary>'
+            f'<div class="collapsible-content">{content}</div>'
+            '</details>'
+        )
+
+    return content
 
 
 # ─── Public API ───────────────────────────────────────────────────────────────
@@ -316,24 +389,13 @@ def render_json_to_html(
     title: str = "JSON Renderer",
 ) -> str:
     """
-    Render a JSON value to a **self-contained HTML document**.
-
-    Parameters
-    ----------
-    data : dict, list, or str
-        Parsed JSON (``dict``/``list``) or a raw JSON string.
-    title : str
-        HTML ``<title>`` and visible heading.
-
-    Returns
-    -------
-    str
-        A complete HTML document string.
+    Render a JSON value (repaired if necessary) to a self-contained HTML document.
     """
     if isinstance(data, str):
-        data = json.loads(data)
+        # Apply json-repair to handle truncated or malformed input
+        data = json.loads(repair(data))
 
-    body = _render_value(data)
+    body = _render_value(data, depth=0)
     escaped_title = escape_html_text(title)
 
     return (

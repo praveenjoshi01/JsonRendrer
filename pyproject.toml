@@ -11,6 +11,7 @@ authors = [
 dependencies = [
     "markdown>=3.5",
     "bleach>=6.0",
+    "json-repair>=0.30.0",
 ]
 
 [project.optional-dependencies]

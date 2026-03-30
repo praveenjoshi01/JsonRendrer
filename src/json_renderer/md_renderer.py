@@ -11,6 +11,8 @@ from __future__ import annotations
 import json
 from typing import Any
 
+from json_repair import repair_json as repair
+
 from json_renderer.utils import escape_md_text, is_markdown_content
 
 # ─── Rendering logic ─────────────────────────────────────────────────────────
@@ -55,23 +57,32 @@ def _render_object(obj: dict[str, Any], indent: int = 0) -> str:
         return "*empty object*"
 
     lines: list[str] = []
-    prefix = "  " * indent
+    
+    # Use vertical bars for deeper levels to make it more scannable
+    prefix = ""
+    if indent > 0:
+        prefix = "  " * (indent - 1) + "│ "
+    
+    # Simple indent for very first level
+    if indent == 0:
+        prefix = ""
 
     for key, value in obj.items():
         rendered_key = _render_key(key)
+        item_prefix = f"{prefix}- "
 
         if isinstance(value, dict):
-            lines.append(f"{prefix}- {rendered_key}:")
+            lines.append(f"{item_prefix}{rendered_key}:")
             nested = _render_object(value, indent + 1)
             lines.append(nested)
 
         elif isinstance(value, list):
-            lines.append(f"{prefix}- {rendered_key}: *(array of {len(value)} items)*")
+            lines.append(f"{item_prefix}{rendered_key}: *(array of {len(value)} items)*")
             nested = _render_array(value, indent + 1)
             lines.append(nested)
 
         elif isinstance(value, str) and is_markdown_content(value):
-            lines.append(f"{prefix}- {rendered_key}:")
+            lines.append(f"{item_prefix}{rendered_key}:")
             lines.append("")
             # Indent the markdown content block
             for md_line in value.split("\n"):
@@ -80,7 +91,7 @@ def _render_object(obj: dict[str, Any], indent: int = 0) -> str:
 
         else:
             rendered_val = _render_value(value, indent)
-            lines.append(f"{prefix}- {rendered_key}: {rendered_val}")
+            lines.append(f"{item_prefix}{rendered_key}: {rendered_val}")
 
     return "\n".join(lines)
 
@@ -91,20 +102,25 @@ def _render_array(arr: list[Any], indent: int = 0) -> str:
         return f"{'  ' * indent}*empty array*"
 
     lines: list[str] = []
-    prefix = "  " * indent
+    
+    prefix = ""
+    if indent > 0:
+        prefix = "  " * (indent - 1) + "│ "
 
     for idx, item in enumerate(arr):
+        item_prefix = f"{prefix}- "
+        
         if isinstance(item, dict):
-            lines.append(f"{prefix}- **[{idx}]**:")
+            lines.append(f"{item_prefix}**[{idx}]**:")
             nested = _render_object(item, indent + 1)
             lines.append(nested)
         elif isinstance(item, list):
-            lines.append(f"{prefix}- **[{idx}]**: *(array of {len(item)} items)*")
+            lines.append(f"{item_prefix}**[{idx}]**: *(array of {len(item)} items)*")
             nested = _render_array(item, indent + 1)
             lines.append(nested)
         else:
             rendered = _render_value(item, indent)
-            lines.append(f"{prefix}- {rendered}")
+            lines.append(f"{item_prefix}{rendered}")
 
     return "\n".join(lines)
 
@@ -117,23 +133,11 @@ def render_json_to_markdown(
     title: str | None = "JSON Document",
 ) -> str:
     """
-    Render a JSON value to a **Markdown document**.
-
-    Parameters
-    ----------
-    data : dict, list, or str
-        Parsed JSON (``dict``/``list``) or a raw JSON string.
-    title : str or None
-        Optional document title rendered as an ``# H1``.
-        Pass ``None`` to omit.
-
-    Returns
-    -------
-    str
-        A Markdown-formatted string.
+    Render a JSON value (repaired if necessary) to a Markdown document.
     """
     if isinstance(data, str):
-        data = json.loads(data)
+        # Apply json-repair to handle truncated or malformed input
+        data = json.loads(repair(data))
 
     sections: list[str] = []
 

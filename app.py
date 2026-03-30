@@ -12,6 +12,7 @@ from pathlib import Path
 
 import streamlit as st
 import streamlit.components.v1 as components
+from json_repair import repair_json as repair
 
 from json_renderer.html_renderer import render_json_to_html
 from json_renderer.md_renderer import render_json_to_markdown
@@ -100,10 +101,16 @@ with st.sidebar:
     st.markdown("---")
     st.markdown("### 📂 Quick Load")
 
-    complex_json_path = Path(__file__).parent / "tests" / "fixtures" / "complex.json"
-    if complex_json_path.exists():
+    fixtures_dir = Path(__file__).parent / "tests" / "fixtures"
+    
+    if (fixtures_dir / "complex.json").exists():
         if st.button("🧪 Load Complex Test JSON", use_container_width=True):
-            st.session_state["json_input"] = complex_json_path.read_text(encoding="utf-8")
+            st.session_state["json_input"] = (fixtures_dir / "complex.json").read_text(encoding="utf-8")
+            st.rerun()
+            
+    if (fixtures_dir / "test1.json").exists():
+        if st.button("💀 Load Messy Test JSON", use_container_width=True, help="Adversarial truncated JSON"):
+            st.session_state["json_input"] = (fixtures_dir / "test1.json").read_text(encoding="utf-8")
             st.rerun()
 
     st.markdown("---")
@@ -154,11 +161,22 @@ with col_paste:
 # ─── Parse & Render ─────────────────────────────────────────────────────────
 
 if json_text.strip():
+    repaired_successfully = False
     try:
+        # First try normal loading
         data = json.loads(json_text)
-    except json.JSONDecodeError as e:
-        st.error(f"**Invalid JSON:** {e}")
-        st.stop()
+    except json.JSONDecodeError:
+        try:
+            # If it fails, try to repair it
+            repaired_json = repair(json_text)
+            data = json.loads(repaired_json)
+            repaired_successfully = True
+        except Exception as e:
+            st.error(f"**Critical JSON Error:** {e}")
+            st.stop()
+
+    if repaired_successfully:
+        st.warning("⚠️ **Note:** The JSON was malformed or truncated and has been automatically repaired for rendering.")
 
     # ── Stats row ────────────────────────────────────────────────────────
     def count_keys(d, depth=0):

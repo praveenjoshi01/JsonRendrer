@@ -66,6 +66,21 @@ def escape_md_text(text: str) -> str:
     return "".join(out)
 
 
+# ─── Variable detection & Highlighting ────────────────────────────────────────
+
+_VAR_PATTERN = re.compile(r"(\$[a-zA-Z_][a-zA-Z0-9_]*|\$\{[^{}]+\})")
+
+
+def highlight_vars_html(text: str) -> str:
+    """
+    Find $VAR and ${EXPR} in HTML-escaped text and wrap them in a span.
+    """
+    return _VAR_PATTERN.sub(
+        r'<span class="json-var">\1</span>',
+        text
+    )
+
+
 # ─── HTML sanitisation (for embedded markdown rendered to HTML) ──────────────
 
 _ALLOWED_TAGS = [
