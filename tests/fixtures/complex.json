@@ -1,0 +1,85 @@
+{
+  "## Markdown Header Key": "value with **bold** and *italic*",
+  "unicode_party": "Héllo 🌍 — em-dash, \u201cquotes\u201d, ñ, 日本語, 𝕳𝖊𝖑𝖑𝖔",
+  "dollar$signs": "$100 price or $$LaTeX$$ block",
+  "html_injection": "<script>alert('xss')</script><b>bold</b>",
+  "nested": {
+    "deep": {
+      "array": [1, null, true, "emoji 🎉"],
+      "object_in_array": [
+        {"id": 1, "tag": "<div>injected</div>"},
+        {"id": 2, "tag": "normal"}
+      ]
+    },
+    "sibling_key": "sibling_value"
+  },
+  "empty_edge_cases": {
+    "empty_string": "",
+    "empty_array": [],
+    "empty_object": {}
+  },
+  "backslash\\key": "backslash\\value",
+  "pipe|and|table": "col1 | col2 | col3",
+  "multiline_md_value": "# Title\n\n- item 1\n- item 2\n\n```python\nprint('hello')\n```",
+  "angle_brackets": "5 < 10 && 10 > 5",
+  "ampersand&key": "Tom & Jerry",
+  "url_value": "https://example.com/path?q=1&r=2#anchor",
+  "code_block_value": "Use `dict[str, Any]` for typing",
+  "numeric_types": {
+    "integer": 42,
+    "float": 3.14159,
+    "negative": -1,
+    "zero": 0,
+    "large": 9999999999999999
+  },
+  "special_unicode": {
+    "zero_width_joiner": "👨\u200d👩\u200d👧\u200d👦",
+    "RTL_text": "\u0645\u0631\u062d\u0628\u0627 \u0628\u0627\u0644\u0639\u0627\u0644\u0645",
+    "combining_diacritics": "ä vs a\u0308",
+    "null_byte_adjacent": "before\u0000after",
+    "BOM_char": "\ufeffhello"
+  },
+  "markdown_rich_value": "## Sub-heading\n\nHere is a [link](https://example.com) and an image:\n\n![alt text](https://example.com/img.png)\n\n> Blockquote with **bold**\n\n| Col A | Col B |\n|-------|-------|\n| 1     | 2     |",
+  "tricky_strings": {
+    "only_backticks": "```",
+    "nested_quotes": "He said \"she said 'hello'\"",
+    "tab_and_newlines": "line1\tTabbed\nline2\nline3",
+    "percent_and_hash": "100% sure #1 choice",
+    "curly_braces": "{key: value}",
+    "square_brackets": "[0, 1, 2]",
+    "regex_like": "^\\d{3}[a-z]+$",
+    "windows_path": "C:\\Users\\test\\file.txt",
+    "single_dollar": "Price is $5",
+    "double_dollar": "$$\\sum_{i=0}^{n} x_i$$",
+    "triple_dollar": "$$$money$$$",
+    "dollar_at_boundaries": "$start and end$"
+  },
+  "deeply_nested": {
+    "level_1": {
+      "level_2": {
+        "level_3": {
+          "level_4": {
+            "level_5": "deep value 🏊"
+          }
+        }
+      }
+    }
+  },
+  "mixed_array": [
+    42,
+    "string",
+    true,
+    false,
+    null,
+    [1, 2, 3],
+    {"nested": "object"},
+    "**bold markdown** with `code`",
+    "$$$",
+    "<em>html tags</em>"
+  ],
+  "boolean_values": {
+    "true_val": true,
+    "false_val": false
+  },
+  "null_value": null
+}
